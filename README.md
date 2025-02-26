@@ -1,0 +1,6 @@
+Starting a merchandize print service and making product available on various platforms, and making custom personalized products for friends family and business. Additional printing and services for concerts, public events, marketing materials and feet on the ground person to person advertising. Requires some backend. Thus there is a git repository.
+
+In the repo you will find: (https://github.com/alignedfibers/print_and_imagery)
+Python and bash scripts to help in batch prep images for merchandize printing. 
+
+For each need encountered as I prep images for physical print with screen-print, dtf, dtg, sublimation, cutting, transfer templates I will create a bulk processing script under this project. I am not an AI developer, but open libraries and AI models to complete these task are required, I do import and use them as needed, this has given me understaning on the way numpy works and how arrays are not sequentially processed. Numpy is awesome, depending on the need loading model help for object removal, replacement, or applies per pixel algorithms for effects in conjunction with the identify scripts. You will see more identify_* scripts in here, they passback a numpy array of pixels we can do what we want with and I will continue to make identify_* scripts and apply_* scripts. The scripts is only way I can show my organizational method.
