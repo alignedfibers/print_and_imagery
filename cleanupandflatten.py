@@ -51,21 +51,12 @@ def process_images(source_dir: Path, dest_dir: Path):
     for file_path in all_files:  # Recursively find all files
         if not file_path.is_file():
             continue  # Skip directories
-        if dest_dir in l1_dirs:
-            print(f"🛑 Skipping destination directory: {file_path}")
-            print("############")
-            print("############")
-            print("############")
-            print("############")
-        # Check if the file is inside a forbidden directory
-        #if any(str(file_path).startswith(forbidden) for forbidden in FORBIDDEN_DIRS):
-        #    print(f"❌ Skipping system directory file: {file_path}")
-        #    continue
-        # Print first-level directories for debugging
-        print(f"📂 First-level directories in move loop: {l1_dirs}") 
-        print(f" This is the dest dir === {dest_dir}")
-        print(f"📂 Checking file: {file_path}")
-        print(f"🔎 file_path.parents: {[str(p) for p in file_path.parents]} (Type: {type(file_path.parents)})")
+        if file_path.is_relative_to(dest_dir) or file_path.parts[1] in FORBIDDEN_DIRS:
+            print(f"🛑 Skipping file inside destination directory: {file_path}")
+            continue
+        print(f"📂{file_path}")
+        print(f"📂{dest_dir}")
+        print(f"📂 First-level directories in move loop: {l1_dirs}")
         print(f"🔎 Expected dest_dir: {dest_dir} (Type: {type(dest_dir)})")
       
         base_name = file_path.name
