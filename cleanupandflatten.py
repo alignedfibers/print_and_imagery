@@ -1,9 +1,12 @@
 import os
 import shutil
 import mimetypes
+import random
+import string
 import argparse
 from pathlib import Path
 
+print("=== BEGIN ===")
 # Directories to NEVER process
 FORBIDDEN_DIRS = {"/", "/root", "/etc", "/var", "/usr", "/dev", "/lib", "/lib64",
                   "/opt", "/run", "/sys", "/snap", "/srv", "/boot", "/cdrom", "/bin", "/sbin", "/1"}
@@ -21,8 +24,9 @@ def get_valid_source_dir(source_dir: str) -> Path:
     return resolved_path
 
 # Function to move images recursively while avoiding system-critical directories
-def process_images(source_dir: Path):
-    dest_dir = source_dir.parent  # Parent directory for file moves
+def process_images(source_dir: Path, dest_dir: Path):
+    print("=== Proces Images Func ===")
+    #dest_dir = source_dir.parent  # Parent directory for file moves
     script_name = Path(__file__).name  # Get this script's filename
     allowed_mime_prefix = "image/"
 
@@ -30,16 +34,47 @@ def process_images(source_dir: Path):
     print(f"📂 Source Directory: {source_dir}")
     print(f"📂 Destination Directory: {dest_dir}")
     print("=========================")
+    l1_dirs = []  # Store first-level directories
+    loop_cancel = False  # Track when to stop looking for first-level dirs
+    for f_path in source_dir.rglob("*"):  # Recursively find all files and dirs
+        if loop_cancel:  # Stop if we've gone too deep
+            break  
+        if f_path.is_dir():  # Check if it's a directory
+            if len(f_path.parts) == len(source_dir.parts) + 1:  # First-level directory?
+                l1_dirs.append(f_path)  # Store first-level dir
+            else:
+                loop_cancel = True  # We've gone deeper, stop the 
+    # Take a snapshot of all files and directories under source_dir
+    # Now it's a static list from recursively find all files
+    all_files = list(source_dir.rglob("*"))  
 
-    for file_path in source_dir.rglob("*"):  # Recursively find all files
+    for file_path in all_files:  # Recursively find all files
         if not file_path.is_file():
             continue  # Skip directories
-
-        # Check if the file is inside a forbidden directory
-        if any(str(file_path).startswith(forbidden) for forbidden in FORBIDDEN_DIRS):
-            print(f"❌ Skipping system directory file: {file_path}")
+        if dest_dir in file_path.parents:
+            print(f"🛑 Skipping already moved file inside destination: {file_path}")
+            print("############")
+            print("############")
+            print("############")
+            print("############")
             continue
-
+        if dest_dir in l1_dirs:
+            print(f"🛑 Skipping destination directory: {file_path}")
+            print("############")
+            print("############")
+            print("############")
+            print("############")
+        # Check if the file is inside a forbidden directory
+        #if any(str(file_path).startswith(forbidden) for forbidden in FORBIDDEN_DIRS):
+        #    print(f"❌ Skipping system directory file: {file_path}")
+        #    continue
+        # Print first-level directories for debugging
+        print(f"📂 First-level directories in move loop: {l1_dirs}") 
+        print(f" This is the dest dir === {dest_dir}")
+        print(f"📂 Checking file: {file_path}")
+        print(f"🔎 file_path.parents: {[str(p) for p in file_path.parents]} (Type: {type(file_path.parents)})")
+        print(f"🔎 Expected dest_dir: {dest_dir} (Type: {type(dest_dir)})")
+      
         base_name = file_path.name
         mime_type, _ = mimetypes.guess_type(file_path)
 
@@ -59,11 +94,35 @@ def process_images(source_dir: Path):
 
         # Resolve destination file path
         dest_file_path = dest_dir / base_name
+        print(f"WTF ##### DESTINATION CORRECT? {dest_file_path}")
+        print("====================================")
+        print("====================================")
+        print("====================================")
+        print("====================================")
+        
         if dest_file_path.exists():
+            print("EXISTS")
             timestamp = int(file_path.stat().st_mtime)
             new_name = f"{base}_{timestamp}.{ext}" if ext else f"{base}_{timestamp}"
             dest_file_path = dest_dir / new_name
+            print(f"What the hell new name {dest_file_path}")
+            print("==")
 
         # Move the file
         print(f"Moving {file_path} to {dest_file_path}")
-        sh
+        shutil.move(str(file_path), str(dest_file_path))
+
+def generate_random_name(length=8):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+if __name__ == "__main__":
+    source_dir = get_valid_source_dir(Path.cwd())  # Get current working directory
+    output_dir = source_dir / generate_random_name()  # Create a unique output dir
+    output_dir.mkdir(exist_ok=True)
+
+    print(f"📂 Created output directory: {output_dir}")
+
+    # Process images
+    process_images(source_dir, output_dir)
+
+    print("=== DONE ===")
