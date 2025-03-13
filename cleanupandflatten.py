@@ -51,13 +51,6 @@ def process_images(source_dir: Path, dest_dir: Path):
     for file_path in all_files:  # Recursively find all files
         if not file_path.is_file():
             continue  # Skip directories
-        if dest_dir in file_path.parents:
-            print(f"🛑 Skipping already moved file inside destination: {file_path}")
-            print("############")
-            print("############")
-            print("############")
-            print("############")
-            continue
         if dest_dir in l1_dirs:
             print(f"🛑 Skipping destination directory: {file_path}")
             print("############")
@@ -94,7 +87,7 @@ def process_images(source_dir: Path, dest_dir: Path):
 
         # Resolve destination file path
         dest_file_path = dest_dir / base_name
-        print(f"WTF ##### DESTINATION CORRECT? {dest_file_path}")
+        print(f"##### DESTINATION CORRECT? {dest_file_path}")
         print("====================================")
         print("====================================")
         print("====================================")
