@@ -153,6 +153,9 @@ def validate_args(args):
         do_warn("All images in current directory will be scaled and saved as with new file names\n \
         No path specified please take caution")
         do_yes_no_prompt()
+    if args.silent != "PROMPT":
+        global OUTPUT_LEVEL
+        OUTPUT_LEVEL = args.silent
 
 if __name__ == "__main__":
     import argparse
