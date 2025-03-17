@@ -36,6 +36,7 @@ def process_images(source_dir: Path, dest_dir: Path):
     print(f"📂 Source Directory: {source_dir}")
     print(f"📂 Destination Directory: {dest_dir}")
     print("=========================")
+    """
     l1_dirs = []  # Store first-level directories
     loop_cancel = False  # Track when to stop looking for first-level dirs
     for f_path in source_dir.rglob("*"):  # Recursively find all files and dirs
@@ -46,8 +47,8 @@ def process_images(source_dir: Path, dest_dir: Path):
                 l1_dirs.append(f_path)  # Store first-level dir
             else:
                 loop_cancel = True  # We've gone deeper, stop the 
+    """                
     # Take a snapshot of all files and directories under source_dir
-    # Now it's a static list from recursively find all files
     all_files = list(source_dir.rglob("*"))  
 
     for file_path in all_files:  # Recursively find all files
