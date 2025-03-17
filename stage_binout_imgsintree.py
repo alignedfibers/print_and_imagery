@@ -159,9 +159,9 @@ def validate_args(args):
 def parse_args():
     parser = argparse.ArgumentParser(description="Move all images from input-path given or current directory and subdirectory to new random named folder/n created within the current directory or output-path given")
     # Input path: can be file or directory; if omitted, we use current directory (with a warning)
-    parser.add_argument("-ip", "--input-path", default=None, help="Path to the parent directory containing images and subdirectories with images.")
+    parser.add_argument("-ip", "--input-path", default=None, help="Path to source directory containing images and subdirectories with images.")
     # Output path: may be a file (when input is file) or a directory
-    parser.add_argument("-op", "--output-path", default=None, help="Path to the parent directory containing images and subdirectories.")
+    parser.add_argument("-op", "--output-path", default=None, help="Path to directory acting as parent where we create the archive folder images will be placed in.")
     # Silence my friend, has options for silence Errors, Errors+Warnings, Errors+Warnings+Info, Errors+Warnings+Info+Prompts
     parser.add_argument("-si", "--silent", type=str, choices=("NONE","ERR","WARNING","INFO","PROMPT"), default="PROMPT", help="PROMPT is all output and NONE is silent - NONE,ERR,WARNING,INFO,PROMPT")
     return parser.parse_args()
