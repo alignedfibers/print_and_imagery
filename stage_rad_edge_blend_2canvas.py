@@ -1,7 +1,8 @@
+#!/usr/bin/python3
 from PIL import Image, ImageDraw
 
 # Retry with the missing import added
-def apply_rounded_corners_with_blending(image, corner_radius_ratio=0.15):
+def apply_rounded_corners_with_blending(input_image_path, corner_radius_ratio=0.15):
     """
     Apply rounded corners and strong blending at the edges to smoothly transition 
     the image into the underlying canvas.
@@ -10,6 +11,7 @@ def apply_rounded_corners_with_blending(image, corner_radius_ratio=0.15):
     :param corner_radius_ratio: Ratio of the image size used to determine the corner rounding.
     :return: Processed PIL Image with rounded corners and blended edges.
     """
+    image = Image.open(input_image_path)
     image = image.convert("RGBA")  # Preserve full color with alpha channel
     width, height = image.size
 
@@ -33,7 +35,7 @@ def apply_rounded_corners_with_blending(image, corner_radius_ratio=0.15):
         for x in range(width):
             dist_x = min(x, width - x)
             dist_y = min(y, height - y)
-            edge_blend = min(dist_x, dist_y) / (width * 0.2)  # Blend within 20% of image width
+            edge_blend = min(dist_x, dist_y) / (width * 0.05)  # Blend within 5% of image width
             edge_blend = min(max(edge_blend, 0), 1)
             mask.putpixel((x, y), int(mask.getpixel((x, y)) * edge_blend))
 
@@ -44,16 +46,16 @@ def apply_rounded_corners_with_blending(image, corner_radius_ratio=0.15):
     return blended_image
 
 # Load image from file (Replace 'input.png' with your actual image path)
-input_image_path = "outs/00231-2045048988.png_scaled.png"  # Change this to your image file
-output_image_path = "outs/00231-2045048988.png_scaled_rad.png"
+#input_image_path = "outs/00231-2045048988.png_scaled.png"  # Change this to your image file
+#output_image_path = "outs/00231-2045048988.png_scaled_rad.png"
 
-image = Image.open(input_image_path)
+#image = Image.open(input_image_path)
 
 # Apply rounded corners and blending effect
-rounded_blended_result = apply_rounded_corners_with_blending(image)
+#rounded_blended_result = apply_rounded_corners_with_blending(image)
 
 # Save result for download
-rounded_blended_result.save(output_image_path)
+#rounded_blended_result.save(output_image_path)
 
 # Provide download link
 #rounded_blended_result
@@ -79,7 +81,7 @@ def do_info(msg):
          
 def validate_args(args):
     #inspect and decorate the arguments according to logic requiring checks
-    if args.input_path is None:
+    if args.input is None:
         do_warn("All images in current directory will be blended to canvas with 10% margin and saved as with new file names\n \
         No path specified please take caution")
         do_yes_no_prompt()
@@ -92,7 +94,11 @@ if __name__ == "__main__":
     parser.add_argument("--output", required=True, help="Path to save blended edge image")
     parser.add_argument("--depth", type=int, default=4, help="Depth of edge blend in increments of 10ths of image size choose 1-10")
     args = parser.parse_args()
-    #validate_args(arguments)
+    validate_args(args)
     #apply_rounded_corners_with_blending(image)
+    # Apply rounded corners and blending effect
+    rounded_blended_result = apply_rounded_corners_with_blending(args.input)
+    # Save result for download
+    rounded_blended_result.save(args.output)
     #upscale_image(args.input, args.output, scale=args.scale)
     #corners_and_edge_blend_helper(args.input)
