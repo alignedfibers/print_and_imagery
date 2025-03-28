@@ -15,7 +15,7 @@ def do_removebg(image):
     # Save the processed image
     return final_image
 
-def fade_edges_to_transparent(image)
+def do_fade_edges(image)
     width, height = image.size
     # Create a mask for rounded corners and edge blending
     mask = Image.new("L", (width, height), 255)
@@ -42,7 +42,7 @@ def fade_edges_to_transparent(image)
     blended_image.paste(image, (0, 0), mask)
     return blended_image
 
-def upscale_image(image,scale=4):
+def do_upscale(image,scale=4):
     def check_cpu_optimizations():
         """ Check available CPU optimizations and enable them if supported. """
         optimizations = {
