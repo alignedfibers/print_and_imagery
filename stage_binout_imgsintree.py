@@ -59,7 +59,7 @@ def process_images(source_dir: Path, dest_dir: Path):
             continue
         print(f"📂{file_path}")
         print(f"📂{dest_dir}")
-        print(f"📂 First-level directories in move loop: {l1_dirs}")
+        #print(f"📂 First-level directories in move loop: {l1_dirs}")
         print(f"🔎 Expected dest_dir: {dest_dir} (Type: {type(dest_dir)})")
       
         base_name = file_path.name
