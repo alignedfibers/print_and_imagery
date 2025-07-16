@@ -1,6 +1,21 @@
 #!/usr/bin/python3
+"""
+    ############
+    Just to remember briefly.
+    Moves all images in the directory subtree structure to a single directory
+    Takes arg switches of --input-path, -ip and --output-path, -op
+    Test images for same name and prepend random string to avoid collisions on move.
+    Test the parameters are valid, set to none as default.
+    Default "none" is use current directory for input, and creates random destination directory as child.
+    *This will move images from all levels of the subtree up to the new destination without collisions.
+    *Test and error under any of the system directories. Intended for linux, might work on windows.
+    *Only import not standard is "magic" - requirements.txt should list python-magic
+    *python-magic will not work unless you have the system library libmagic, ensure to apt,df,yum,exc install it.
+    ############
+"""
 import os
 import shutil
+import magic
 import mimetypes
 import random
 import string
@@ -28,7 +43,6 @@ def get_valid_source_dir(source_dir: str) -> Path:
 # Function to move images recursively while avoiding system-critical directories
 def process_images(source_dir: Path, dest_dir: Path):
     print("=== Proces Images Func ===")
-    #dest_dir = source_dir.parent  # Parent directory for file moves
     script_name = Path(__file__).name  # Get this script's filename
     allowed_mime_prefix = "image/"
 
@@ -36,35 +50,24 @@ def process_images(source_dir: Path, dest_dir: Path):
     print(f"📂 Source Directory: {source_dir}")
     print(f"📂 Destination Directory: {dest_dir}")
     print("=========================")
-    """
-    l1_dirs = []  # Store first-level directories
-    loop_cancel = False  # Track when to stop looking for first-level dirs
-    for f_path in source_dir.rglob("*"):  # Recursively find all files and dirs
-        if loop_cancel:  # Stop if we've gone too deep
-            break  
-        if f_path.is_dir():  # Check if it's a directory
-            if len(f_path.parts) == len(source_dir.parts) + 1:  # First-level directory?
-                l1_dirs.append(f_path)  # Store first-level dir
-            else:
-                loop_cancel = True  # We've gone deeper, stop the 
-    """                
+              
     # Take a snapshot of all files and directories under source_dir
+    # Tried using the mime prefix in the rglob and scrapped it, easier to glob everything.
     all_files = list(source_dir.rglob("*"))  
-
+ 
     for file_path in all_files:  # Recursively find all files
         if not file_path.is_file():
-            continue  # Skip directories
+            continue  # Skip directories including new random named destination directory
         if file_path.is_relative_to(dest_dir) or file_path.parts[1] in FORBIDDEN_DIRS:
             print(f"🛑 Skipping file inside destination directory: {file_path}")
-            continue
+            continue  # Safety check - Avoid images copied already, and all system directories.
         print(f"📂{file_path}")
         print(f"📂{dest_dir}")
-        print(f"📂 First-level directories in move loop: {l1_dirs}")
         print(f"🔎 Expected dest_dir: {dest_dir} (Type: {type(dest_dir)})")
       
         base_name = file_path.name
-        mime_type, _ = mimetypes.guess_type(file_path)
-
+        #mime_type, _ = mimetypes.guess_type(file_path)
+        mime_type = magic.from_file(file_path, mime=True)
         # Skip the script itself
         if base_name == script_name:
             print(f"Skipping script itself: {file_path}")
@@ -98,6 +101,7 @@ def process_images(source_dir: Path, dest_dir: Path):
         # Move the file
         print(f"Moving {file_path} to {dest_file_path}")
         shutil.move(str(file_path), str(dest_file_path))
+    print("\n This is the end of the file move loop \n")
 
 def generate_random_name(length=8):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
@@ -157,6 +161,7 @@ def validate_args(args):
 
 
 def parse_args():
+    #This sets defaults to none
     parser = argparse.ArgumentParser(description="Move all images from input-path given or current directory and subdirectory to new random named folder/n created within the current directory or output-path given")
     # Input path: can be file or directory; if omitted, we use current directory (with a warning)
     parser.add_argument("-ip", "--input-path", default=None, help="Path to source directory containing images and subdirectories with images.")
@@ -173,20 +178,6 @@ def flatten_helper(args):
     process_images(args.input_path, output_dir)
 
 if __name__ == "__main__":
-    #source_dir = get_valid_source_dir(Path.cwd())  # Get current working directory
-    #output_dir = source_dir / generate_random_name()  # Create a unique output dir
-    #output_dir.mkdir(exist_ok=True)
-
-    #print(f"📂 Created output directory: {output_dir}")
-
-    # Process images
-    #process_images(source_dir, output_dir)
-
-    #print("=== DONE ===")
-    #parser = argparse.ArgumentParser(description="Recursive Image Move to Single Directory")
-    #parser.add_argument("--input", required=False, help="Path to the parent directory containing images and subdirectories")
-    #parser.add_argument("--output", required=False, help="Path to move images to")
-    #args = parser.parse_args()
     arguments = parse_args()
     validate_args(arguments)
     flatten_helper(arguments)
