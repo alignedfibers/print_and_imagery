@@ -266,4 +266,195 @@ rounded_blended_result.save(output_image_path)
 
 print(f"Processed image saved as: {output_image_path}")
 
+#################
+
+##Apply dithering that might have worked?
+import argparse
+from PIL import Image
+import glob
+
+def apply_dithering(input_path, output_path):
+    image = Image.open(input_path).convert("L")
+    dithered_image = image.convert("1", dither=Image.FLOYDSTEINBERG)
+    dithered_image.save(output_path)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Apply dithering to reduce shading density.")
+    parser.add_argument("input", help="Input image or glob pattern")
+    parser.add_argument("output", help="Output directory")
+    
+    args = parser.parse_args()
+    
+    for file in glob.glob(args.input):
+        apply_dithering(file, f"{args.output}/{file.split('/')[-1]}")
+###################
+
+#Convert to grascale that might have worked
+import argparse
+from PIL import Image, ImageOps
+import glob
+
+def convert_to_grayscale(input_path, output_path):
+    image = Image.open(input_path).convert("RGB")
+    grayscale_image = ImageOps.grayscale(image)
+    grayscale_image.save(output_path)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Convert image to grayscale.")
+    parser.add_argument("input", help="Input image or glob pattern")
+    parser.add_argument("output", help="Output directory")
+
+    args = parser.parse_args()
+    
+    for file in glob.glob(args.input):
+        convert_to_grayscale(file, f"{args.output}/{file.split('/')[-1]}")
+######################
+#Remove Darker Shading
+import argparse
+from PIL import Image
+import glob
+
+def remove_darker_shading(input_path, output_path, threshold=150):
+    image = Image.open(input_path).convert("L")
+    light_mask = image.point(lambda p: 255 if p > threshold else p, mode="L")
+    light_mask.save(output_path)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Remove darker shading while preserving lighter tones.")
+    parser.add_argument("input", help="Input image or glob pattern")
+    parser.add_argument("output", help="Output directory")
+    parser.add_argument("--threshold", type=int, default=150, help="Threshold for shading removal")
+
+    args = parser.parse_args()
+    
+    for file in glob.glob(args.input):
+        remove_darker_shading(file, f"{args.output}/{file.split('/')[-1]}", args.threshold)
+######################
+
+#Increase line density
+import argparse
+import numpy as np
+from PIL import Image
+import glob
+
+def thicken_lines(input_path, output_path, kernel_size=3):
+    image = Image.open(input_path).convert("L")
+    image_array = np.array(image)
+    thickened_array = np.maximum.reduce([
+        np.roll(image_array, shift, axis)
+        for axis in range(2)
+        for shift in (-kernel_size, 0, kernel_size)
+    ])
+    thickened_image = Image.fromarray(thickened_array)
+    thickened_image.save(output_path)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Increase line density by thickening edges.")
+    parser.add_argument("input", help="Input image or glob pattern")
+    parser.add_argument("output", help="Output directory")
+    parser.add_argument("--kernel", type=int, default=3, help="Kernel size for thickening")
+
+    args = parser.parse_args()
+    
+    for file in glob.glob(args.input):
+        thicken_lines(file, f"{args.output}/{file.split('/')[-1]}", args.kernel)
+
+########################
+# Run example of all simple image scripts
+# Re-import required libraries since execution state was reset
+import os
+import glob
+import numpy as np
+import argparse
+from PIL import Image, ImageOps, ImageFilter
+
+# Re-define functions after reset
+
+def reduce_color_palette(input_path, output_path, num_colors=6):
+    image = Image.open(input_path).convert("RGB")
+    simplified_image = image.quantize(colors=num_colors, method=2)
+    simplified_image.save(output_path)
+
+def enhance_edges(input_path, output_path):
+    image = Image.open(input_path).convert("RGB")
+    enhanced_image = image.filter(ImageFilter.EDGE_ENHANCE)
+    enhanced_image.save(output_path)
+
+def convert_to_grayscale(input_path, output_path):
+    image = Image.open(input_path).convert("RGB")
+    grayscale_image = ImageOps.grayscale(image)
+    grayscale_image.save(output_path)
+
+def apply_dithering(input_path, output_path):
+    image = Image.open(input_path).convert("L")
+    dithered_image = image.convert("1", dither=Image.FLOYDSTEINBERG)
+    dithered_image.save(output_path)
+
+def remove_darker_shading(input_path, output_path, threshold=150):
+    image = Image.open(input_path).convert("L")
+    light_mask = image.point(lambda p: 255 if p > threshold else p, mode="L")
+    light_mask.save(output_path)
+
+def thicken_lines(input_path, output_path, kernel_size=3):
+    image = Image.open(input_path).convert("L")
+    image_array = np.array(image)
+    thickened_array = np.maximum.reduce([
+        np.roll(image_array, shift, axis)
+        for axis in range(2)
+        for shift in (-kernel_size, 0, kernel_size)
+    ])
+    thickened_image = Image.fromarray(thickened_array)
+    thickened_image.save(output_path)
+
+# Recreate directories
+input_image_path = "/mnt/data/473190497_1185582846468509_7001657067180195637_n~2.png"
+output_dir = "/mnt/data/processed_outputs"
+os.makedirs(output_dir, exist_ok=True)
+
+# Define output paths
+output_paths = {
+    "reduced_palette": os.path.join(output_dir, "reduced_palette.png"),
+    "enhanced_edges": os.path.join(output_dir, "enhanced_edges.png"),
+    "grayscale": os.path.join(output_dir, "grayscale.png"),
+    "dithered": os.path.join(output_dir, "dithered.png"),
+    "lighter_shading": os.path.join(output_dir, "lighter_shading.png"),
+    "thickened_lines": os.path.join(output_dir, "thickened_lines.png"),
+}
+
+# Apply transformations
+reduce_color_palette(input_image_path, output_paths["reduced_palette"])
+enhance_edges(input_image_path, output_paths["enhanced_edges"])
+convert_to_grayscale(input_image_path, output_paths["grayscale"])
+apply_dithering(output_paths["grayscale"], output_paths["dithered"])
+remove_darker_shading(output_paths["grayscale"], output_paths["lighter_shading"])
+thicken_lines(output_paths["lighter_shading"], output_paths["thickened_lines"])
+
+# Return all processed images
+output_paths
+################################
+#Reduce colors, 3,8,12,16
+# Define a modified function to allow dynamic color palette testing
+def reduce_color_palette_test(input_path, output_path, num_colors):
+    image = Image.open(input_path).convert("RGB")
+    reduced_image = image.quantize(colors=num_colors, method=2)
+    reduced_image.save(output_path)
+
+# Define test cases with different color limits
+color_tests = [3, 8, 12, 16]
+output_paths_palette = {}
+
+# Process each color variation
+for colors in color_tests:
+    output_file = f"/mnt/data/processed_outputs/reduced_palette_{colors}.png"
+    reduce_color_palette_test(input_image_path, output_file, colors)
+    output_paths_palette[f"{colors}_colors"] = output_file
+
+# Return all processed images for review
+output_paths_palette
+##################################################
+#Closes color function
+def closest_color(pixel, palette):
+    distances = np.linalg.norm(palette - pixel, axis=1)
+    return palette[np.argmin(distances)]
+####################################################
 
