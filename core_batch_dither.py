@@ -49,36 +49,43 @@ def process_images(source_dir: Path, dest_dir: Path):
     script_name = Path(__file__).name  # Get this script's filename
     allowed_mime_prefix = "image/"
 
-    print("=== Processing Images ===")
-    print(f"📂 Source Directory: {source_dir}")
-    print(f"📂 Destination Directory: {dest_dir}")
-    print("=========================")
+    do_info("=== Processing Images ===")
+    do_info(f"📂 Source Directory: {source_dir}")
+    do_info(f"📂 Destination Directory: {dest_dir}")
+    do_info("=========================")
               
     # Take a snapshot of all files and directories under source_dir
     # Tried using the mime prefix in the rglob and scrapped it, easier to glob everything.
-    all_files = list(source_dir.rglob("*"))
+    if not source_dir.exists():
+        raise FileNotFoundError(f"{source_dir} does not exist")
+    if not source_dir.is_file() and not source_dir.is_dir():
+        raise ValueError("Path exists but is neither file nor directory")
+    if source_dir.is_file():
+        all_files = [source_dir.resolve()]
+    if source_dir.is_dir():
+        all_files = list(source_dir.rglob("*"))
 
     for file_path in all_files: # Recursively find all files
         if not file_path.is_file():
             continue # Skip directories including new random named destination directory
         if file_path.is_relative_to(dest_dir) or file_path.parts[1] in FORBIDDEN_DIRS:
-            print(f"🛑 Skipping file inside destination directory: {file_path}")
+            do_info(f"🛑 Skipping file inside destination directory: {file_path}")
             continue  # Safety check - Avoid images copied already, and all system directories.
-        print(f"📂{file_path}")
-        print(f"📂{dest_dir}")
-        print(f"🔎 Expected dest_dir: {dest_dir} (Type: {type(dest_dir)})")
+        do_info(f"📂{file_path}")
+        do_info(f"📂{dest_dir}")
+        do_info(f"🔎 Expected dest_dir: {dest_dir} (Type: {type(dest_dir)})")
       
         base_name = file_path.name
         #mime_type, _ = mimetypes.guess_type(file_path)
         mime_type = magic.from_file(file_path, mime=True)
         # Skip the script itself
         if base_name == script_name:
-            print(f"Skipping script itself: {file_path}")
+            do_info(f"Skipping script itself: {file_path}")
             continue
 
         # Skip non-image files
         if not mime_type or not mime_type.startswith(allowed_mime_prefix):
-            print(f"Skipping non-image file (detected as {mime_type}): {file_path}")
+            do_info(f"Skipping non-image file (detected as {mime_type}): {file_path}")
             continue
             
         # Extract base name and extension by spliting the name from the extension
@@ -87,19 +94,19 @@ def process_images(source_dir: Path, dest_dir: Path):
 
         # Resolve destination file path
         dest_file_path = dest_dir / base_name
-        print(f"##### DESTINATION CORRECT? {dest_file_path}")
-        print("====================================")
-        print("====================================")
-        print("====================================")
-        print("====================================")
+        do_info(f"##### DESTINATION CORRECT? {dest_file_path}")
+        do_info("====================================")
+        do_info("====================================")
+        do_info("====================================")
+        do_info("====================================")
 
         if dest_file_path.exists():
-            print("EXISTS")
+            do_info("EXISTS")
             timestamp = int(file_path.stat().st_mtime)
             new_name = f"{base}_{timestamp}.{ext}" if ext else f"{base}_{timestamp}"
             dest_file_path = dest_dir / new_name
-            print(f"What the hell new name {dest_file_path}")
-            print("==")
+            do_info(f"What the hell new name {dest_file_path}")
+            do_info("==")
 
         original_image = sanitize_imageload(file_path)
         if original_image is None: continue  # Skip failed load
@@ -109,7 +116,7 @@ def process_images(source_dir: Path, dest_dir: Path):
         mask2_image = None #stubs later as array or complex diff/origin/svg/id
         current_inflight_image = apply_dithering(current_inflight_image)
         current_inflight_image.save(dest_file_path)
-    print("\n This is the end of the image processing and file writing loop \n")
+    do_info("\n This is the end of the image processing and file writing loop \n")
     
 def generate_random_name(length=8):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
