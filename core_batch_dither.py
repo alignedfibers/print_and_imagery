@@ -3,6 +3,9 @@
     Modified Image Aggregator and Dither Script
     Moves images from subfolders, dithers them, and places copies in a new directory.
     Original files are preserved. Uses Floyd-Steinberg dithering via PIL.
+    bug once process multiple images with this and or other scripts, issues arrise with very large images, 
+    and images that appear black in previews and do not load, but only for very large images it seems, yet
+    the issue seems localized to images that were processed with this script before processing with batch esgran upscale.
 """
 
 import os, sys, shutil, random, string, argparse, mimetypes
