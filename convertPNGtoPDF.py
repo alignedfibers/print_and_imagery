@@ -91,7 +91,7 @@ def apply_upscale(image,scale=4):
     do_info(f"✅ Upscaling complete returning")
     return pil_output
 
-def apply_png_to_pdf_page(image, page_width_in=8.5, page_height_in=11, dpi=300):
+def apply_png_to_pdf_page(image, page_width_in=7.75, page_height_in=11, dpi=300):
     """
     Convert a PIL image into a single PDF-ready page image.
     Fits within a normal page while preserving aspect ratio.
@@ -274,10 +274,21 @@ def process_images(source_dir: Path, dest_dir: Path):
         if dest_file_path.exists():
             do_info("EXISTS")
             timestamp = int(file_path.stat().st_mtime)
-            new_name = f"{base}_{timestamp}.{ext}" if ext else f"{base}_{timestamp}"
+            new_name = f"{base}_{timestamp}.pdf" if ext else f"{base}_{timestamp}"
             dest_file_path = dest_dir / new_name
             do_info(f"New name {dest_file_path}")
             do_info("==")
+        else:
+            try:
+                file_creation_time_ns = file_path.stat().st_birthtime_ns
+            except AttributeError:
+                file_creation_time_ns = file_path.stat().st_ctime_ns
+            folder_name = file_path.parent.name
+            original_timestamp_name = str(file_creation_time_ns)
+            new_name_with_birth_date = f"{folder_name}_{original_timestamp_name}_{base}.pdf" if ext else f"{original_timestamp_name}_{base}"
+            dest_file_path = dest_dir / new_name_with_birth_date
+
+
 
         original_image = sanitize_imageload(file_path)
         if original_image is None: continue  # Skip failed load
