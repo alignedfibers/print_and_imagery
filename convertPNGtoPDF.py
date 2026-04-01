@@ -286,8 +286,8 @@ def process_images(source_dir: Path, dest_dir: Path):
         mask1_image = None #stubs later as array of complex diff/origin/svg/id
         mask2_image = None #stubs later as array or complex diff/origin/svg/id
         #current_inflight_image = apply_dithering(current_inflight_image)
-        current_inflight_image = apply_upscale(current_inflight_image)
-        current_inflight_image.save(dest_file_path)
+        pdf_page = apply_png_to_pdf_page(current_inflight_image)
+        pdf_page.save(dest_file_path, 'PDF', resolution=300)
         # Move the file
         #do_info(f"Moving {file_path} to {dest_file_path}")
         #shutil.move(str(file_path), str(dest_file_path))
