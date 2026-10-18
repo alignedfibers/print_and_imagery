@@ -41,19 +41,19 @@ def get_valid_source_dir(source_dir: str) -> Path:
     return resolved_path
 
 # Function to move images recursively while avoiding system-critical directories
-def process_images(source_dir: Path, dest_dir: Path):
+def process_images(input_dir: Path, dest_dir: Path):
     print("=== Proces Images Func ===")
     script_name = Path(__file__).name  # Get this script's filename
     allowed_mime_prefix = "image/"
 
     print("=== Processing Images ===")
-    print(f"📂 Source Directory: {source_dir}")
+    print(f"📂 Input Directory: {input_dir}")
     print(f"📂 Destination Directory: {dest_dir}")
     print("=========================")
               
-    # Take a snapshot of all files and directories under source_dir
+    # Take a snapshot of all files and directories under input_dir
     # Tried using the mime prefix in the rglob and scrapped it, easier to glob everything.
-    all_files = list(source_dir.rglob("*"))  
+    all_files = list(input_dir.rglob("*"))  
  
     for file_path in all_files:  # Recursively find all files
         if not file_path.is_file():
