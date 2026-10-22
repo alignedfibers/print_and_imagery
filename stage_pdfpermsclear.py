@@ -44,6 +44,20 @@ def save_pdf_nopassword(pdf):
     if not isinstance(pdf, pikepdf.Pdf):
         do_error(f"Expected pikepdf.Pdf, got {type(pdf)} instead.")
         #error type pause sequence on this task log fail in task sequence report, do not complete downstream actions, add to unpause review ticket-queue.
+        #I am just learning python, this was previous system error as as recommended by chatgpt, but I handle my own alerts and error coms to user.
+        #I like the log functionality here, but for coupling and portability, my function loader should accept a logger instead of me direct send via my "do_error"
+        #Since java code is where I have read, seem right way to me "log4j" or something I recall, anyways, instead of do error, we should build a logger that 
+        #implements do error, do warn excetera internally and exposes a common set of functions for logging. Also instead of handling in function
+        #we should raise exceptions from functions, and not handle them, the implementation details that called it should free the developer to easily
+        #handle the raised exception. This particularily allows and agent to see more about the internals if called via api, same as regular code.
+        #Since some exceptions require specific "safeties" handler/handling before giving control over to the developer or agent, we could create 
+        #custom exceptions that have a :before :after for control of how to handle. Since I intend to compose and prioritized functions autonomously, 
+        #it is important that we consider differences between "logger" and chain_context project people will understand as "Task">"Activity" network flow
+        #where the chained_context tracks the completion state of the intended compostion of tasks, operations and service desk will understand the err as 
+        #automation fail tickets, where completion failed for some reason. I see this is "I need a human" and human can unblock. I see tasks as full package
+        #and the Activity as work being completed, all having dependencies, but task rolls up to a completed state, how the work or automation within the
+        #the activity handling is completed can be across of multiple hybrid ways, and the responsibility will be in the completion error which by work
+        #understanding is, "what queue does the failure get placed in?"
         return pdf  
     if not pdf.is_encrypted:
         do_info("PDF is already unencrypted. No changes made.")
