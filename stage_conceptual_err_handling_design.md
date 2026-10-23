@@ -22,7 +22,8 @@ Original thought on the topic where I started with this:
 > #Error type: pause sequence on this task, log fail in task sequence report, do not complete downstream actions, add to unpause review ticket-queue.  
 > \# I am just learning Python. This was previously a system error as recommended by ChatGPT, but I handle my own alerts and error communications to the user.  
 > \# I like the log functionality here, but for coupling and portability, my function loader should accept a logger instead of me directly sending via my "do_error".  
-> \# Since Java code is what I have read, it seems the right way to me, "log4j" or something I recall. Anyways, instead of do_error, we should build a logger that# implements do_error, do_warn, etc. internally and exposes a common set of functions for logging. Also, instead of handling in the function,  
+> \# Since Java code is what I have read, it seems the right way to me, "log4j" or something I recall. Anyways, instead of do_error, we should build a logger that
+> \# implements do_error, do_warn, etc. internally and exposes a common set of functions for logging. Also, instead of handling in the function,  
 > \# handle the raised exception. This particularly allows an agent to see more about the internals if called via API, same as regular code.  
 > \# Since some exceptions require specific "safeties" handlers/handling before giving control over to the developer or agent, we could create# custom exceptions that have a :before and :after for control of how to handle them. Since I intend to compose and prioritize functions autonomously,  
 > \# it is important that we consider differences between "logger" and chain_context, which project people will understand as "Task" > "Activity" network flow,  
