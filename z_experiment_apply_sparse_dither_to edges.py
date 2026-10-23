@@ -1,4 +1,5 @@
-# Load the newly attached image
+#!/usr/bin/python3
+
 new_image_path = "/mnt/data/00001-1095111020.png"
 image = Image.open(new_image_path)
 
