@@ -25,10 +25,13 @@ Original thought on the topic where I started with this:
 > \# Since Java code is what I have read, it seems the right way to me, "log4j" or something I recall. Anyways, instead of do_error, we should build a logger that   
 > \# implements do_error, do_warn, etc. internally and exposes a common set of functions for logging. Also, instead of handling in the function,  
 > \# handle the raised exception. This particularly allows an agent to see more about the internals if called via API, same as regular code.  
-> \# Since some exceptions require specific "safeties" handlers/handling before giving control over to the developer or agent, we could create
+> \# Since some exceptions require specific "safeties" handlers/handling before giving control over to the developer or agent, we could create  
 > \# custom exceptions that have a :before and :after for control of how to handle them. Since I intend to compose and prioritize functions autonomously,  
 > \# it is important that we consider differences between "logger" and chain_context, which project people will understand as "Task" > "Activity" network flow,  
-> \# where the chained_context tracks the completion state of the intended composition of tasks. Operations and service desk will understand the error as# automation failure tickets, where completion failed for some reason. I see this as "I need a human" and a human can unblock. I see tasks as a full package# and the Activity as work being completed, all having dependencies, but the task rolls up to a completed state. How the work or automation within the# activity handling is completed can be across multiple hybrid ways, and the responsibility will be in the completion error, which by work# understanding is, "What queue does the failure get placed in?"  
+> \# where the chained_context tracks the completion state of the intended composition of tasks. Operations and service desk will understand the error as  
+> \# automation failure tickets, where completion failed for some reason. I see this as "I need a human" and a human can unblock. I see tasks as a full package  
+> \# and the Activity as work being completed, all having dependencies, but the task rolls up to a completed state. How the work or automation within the  
+> \# activity handling is completed can be across multiple hybrid ways, and the responsibility will be in the completion error, which by work# understanding is, "What queue does the failure get placed in?"  
 
 
 ## Additional thought nearby in time as I was writing, conceptual and design considerate but not error handling specific.
